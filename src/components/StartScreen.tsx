@@ -20,7 +20,8 @@ import {
   Crown,
   Grid,
   Move,
-  Loader2
+  Loader2,
+  Menu
 } from 'lucide-react';
 import { QRPaymentScreen } from './QRPaymentScreen';
 import { 
@@ -69,6 +70,35 @@ export const StartScreen: React.FC = () => {
   const [name, setName] = useState('');
   const [college, setCollege] = useState('');
   const [isRegisterLoading, setIsRegisterLoading] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<'home' | 'how-it-works' | 'leaderboard'>('home');
+
+  const handleScroll = () => {
+    if (!containerRef.current) return;
+    const scrollPos = containerRef.current.scrollTop;
+    const howItWorksEl = document.getElementById('how-it-works');
+    const leaderboardEl = document.getElementById('leaderboard-section');
+
+    if (leaderboardEl && howItWorksEl) {
+      const containerTop = containerRef.current.getBoundingClientRect().top;
+      const leaderboardTop = leaderboardEl.getBoundingClientRect().top - containerTop + scrollPos - 200;
+      const howItWorksTop = howItWorksEl.getBoundingClientRect().top - containerTop + scrollPos - 200;
+
+      if (scrollPos >= leaderboardTop) {
+        setActiveSection('leaderboard');
+      } else if (scrollPos >= howItWorksTop) {
+        setActiveSection('how-it-works');
+      } else {
+        setActiveSection('home');
+      }
+    }
+  };
+
+  const getNavLinkClass = (section: 'home' | 'how-it-works' | 'leaderboard') => {
+    return activeSection === section
+      ? 'text-white cursor-pointer border-b-2 border-google-blue pb-1 transition-all'
+      : 'text-zinc-400 hover:text-white cursor-pointer transition-colors pb-1';
+  };
 
   useEffect(() => {
     loadLeaderboard();
@@ -180,14 +210,18 @@ export const StartScreen: React.FC = () => {
   };
 
   return (
-    <div ref={containerRef} className="w-full h-screen overflow-y-auto flex flex-col justify-between px-8 pb-6 select-none relative z-10 bg-[#07090e] text-white font-sans scrollbar-thin">
+    <div 
+      ref={containerRef} 
+      onScroll={handleScroll}
+      className="w-full h-screen overflow-y-auto flex flex-col justify-start px-4 sm:px-8 pb-6 select-none relative z-10 bg-[#07090e] text-white font-sans scrollbar-thin"
+    >
       
       {/* Blur background blobs */}
       <div className="absolute top-[8%] left-[5%] w-[420px] h-[420px] rounded-full bg-google-blue/5 blur-3xl pointer-events-none -z-20"></div>
       <div className="absolute top-[15%] right-[5%] w-[450px] h-[450px] rounded-full bg-gradient-to-tr from-google-green/5 to-google-yellow/5 blur-3xl pointer-events-none -z-20"></div>
 
       {/* 1. TOP NAVIGATION HEADER */}
-      <header className="fixed top-0 left-0 right-0 h-16 z-50 flex items-center justify-between border-b border-white/5 bg-[#07090e]/90 backdrop-blur-md px-8">
+      <header className="fixed top-0 left-0 right-0 h-16 z-50 flex items-center justify-between border-b border-white/5 bg-[#07090e]/90 backdrop-blur-md px-4 sm:px-8">
         {/* Left: Google Wordmark & Branding */}
         <div className="flex items-center gap-2 cursor-default">
           <div className="text-xl font-bold tracking-tight select-none">
@@ -197,15 +231,18 @@ export const StartScreen: React.FC = () => {
             <span className="text-google-blue">g</span>
             <span className="text-google-green">l</span>
             <span className="text-google-red">e</span>
-            <span className="text-white font-medium text-sm ml-2.5">UI Puzzle Challenge</span>
+            <span className="hidden sm:inline font-medium text-sm ml-2.5">UI Puzzle Challenge</span>
           </div>
         </div>
 
         {/* Center: Links */}
-        <nav className="hidden md:flex items-center gap-8 text-xs font-bold text-zinc-400 select-none">
+        <nav className="hidden md:flex items-center gap-8 text-xs font-bold select-none">
           <span 
-            onClick={() => containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="text-white cursor-pointer border-b-2 border-google-blue pb-1"
+            onClick={() => {
+              containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+              setActiveSection('home');
+            }}
+            className={getNavLinkClass('home')}
           >
             Home
           </span>
@@ -217,9 +254,10 @@ export const StartScreen: React.FC = () => {
                 const elTop = el.getBoundingClientRect().top;
                 const offset = elTop - containerTop + containerRef.current.scrollTop - 64;
                 containerRef.current.scrollTo({ top: offset, behavior: 'smooth' });
+                setActiveSection('how-it-works');
               }
             }}
-            className="hover:text-white cursor-pointer transition-colors"
+            className={getNavLinkClass('how-it-works')}
           >
             How it Works
           </span>
@@ -231,9 +269,10 @@ export const StartScreen: React.FC = () => {
                 const elTop = el.getBoundingClientRect().top;
                 const offset = elTop - containerTop + containerRef.current.scrollTop - 64;
                 containerRef.current.scrollTo({ top: offset, behavior: 'smooth' });
+                setActiveSection('leaderboard');
               }
             }}
-            className="hover:text-white cursor-pointer transition-colors flex items-center gap-1.5"
+            className={`${getNavLinkClass('leaderboard')} flex items-center gap-1.5`}
           >
             <Trophy className="w-3.5 h-3.5 text-google-yellow fill-current" />
             <span>Leaderboard</span>
@@ -241,10 +280,10 @@ export const StartScreen: React.FC = () => {
         </nav>
 
         {/* Right: Badges, Sounds, Theme Toggle */}
-        <div className="flex items-center gap-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-google-green/10 border border-google-green/20 text-google-green text-xs font-bold select-none">
+        <div className="flex items-center gap-1.5 sm:gap-3">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1 rounded-full bg-google-green/10 border border-google-green/20 text-google-green text-xs font-bold select-none">
             <span className="w-1.5 h-1.5 rounded-full bg-google-green animate-pulse"></span>
-            <span>Event Live</span>
+            <span className="hidden sm:inline">Event Live</span>
           </div>
 
           {/* Sound Toggle */}
@@ -270,19 +309,85 @@ export const StartScreen: React.FC = () => {
               <Moon className="w-4 h-4 fill-current" />
             )}
           </motion.button>
+
+          {/* Hamburger Menu Toggle */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors cursor-pointer md:hidden"
+            title="Menu"
+          >
+            {isMobileMenuOpen ? <X className="w-3.5 h-3.5" /> : <Menu className="w-3.5 h-3.5" />}
+          </button>
         </div>
       </header>
+
+      {/* Slide-down Mobile Menu Drawer */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed top-16 left-0 right-0 bg-[#07090e]/95 border-b border-white/5 flex flex-col p-5 gap-4 text-sm font-black text-zinc-300 z-40 md:hidden shadow-xl"
+          >
+            <span
+              onClick={() => {
+                containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                setActiveSection('home');
+                setIsMobileMenuOpen(false);
+              }}
+              className={`${getNavLinkClass('home')} py-1.5 border-b border-white/5 w-full block text-left`}
+            >
+              Home
+            </span>
+            <span
+              onClick={() => {
+                const el = document.getElementById('how-it-works');
+                if (el && containerRef.current) {
+                  const containerTop = containerRef.current.getBoundingClientRect().top;
+                  const elTop = el.getBoundingClientRect().top;
+                  const offset = elTop - containerTop + containerRef.current.scrollTop - 64;
+                  containerRef.current.scrollTo({ top: offset, behavior: 'smooth' });
+                  setActiveSection('how-it-works');
+                }
+                setIsMobileMenuOpen(false);
+              }}
+              className={`${getNavLinkClass('how-it-works')} py-1.5 border-b border-white/5 w-full block text-left`}
+            >
+              How it Works
+            </span>
+            <span
+              onClick={() => {
+                const el = document.getElementById('leaderboard-section');
+                if (el && containerRef.current) {
+                  const containerTop = containerRef.current.getBoundingClientRect().top;
+                  const elTop = el.getBoundingClientRect().top;
+                  const offset = elTop - containerTop + containerRef.current.scrollTop - 64;
+                  containerRef.current.scrollTo({ top: offset, behavior: 'smooth' });
+                  setActiveSection('leaderboard');
+                }
+                setIsMobileMenuOpen(false);
+              }}
+              className={`${getNavLinkClass('leaderboard')} py-1.5 border-b border-white/5 w-full flex items-center gap-1.5 text-left`}
+            >
+              <Trophy className="w-3.5 h-3.5 text-google-yellow fill-current" />
+              <span>Leaderboard</span>
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 2. HERO SECTION GRID */}
       <motion.div 
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="w-full max-w-5xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-12 md:gap-24 py-8 lg:py-0 min-h-[calc(100vh-4rem)]"
+        className="w-full max-w-5xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-24 pt-24 pb-12 lg:py-0 min-h-[calc(100vh-4rem)] px-4 sm:px-0 flex-shrink-0"
       >
         
         {/* Left Column: SaaS Headline, Pills, CTA */}
-        <div className="w-full lg:w-[52%] flex flex-col items-center lg:items-start text-center lg:text-left pr-4">
+        <div className="w-full lg:w-[52%] flex flex-col items-center lg:items-start text-center lg:text-left pr-0 lg:pr-4">
           <motion.div 
             variants={itemVariants}
             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#161f38] border border-[#FBBC05]/20 text-[#FBBC05] text-[10px] font-bold tracking-wide uppercase mb-5"
@@ -293,7 +398,7 @@ export const StartScreen: React.FC = () => {
 
           <motion.h1 
             variants={itemVariants}
-            className="text-[55px] md:text-[68px] lg:text-[76px] font-black tracking-tight leading-[1.05] mb-6 w-full"
+            className="text-[44px] sm:text-[55px] md:text-[68px] lg:text-[76px] font-black tracking-tight leading-[1.05] mb-6 w-full"
           >
             <span className="text-white">Recreate.</span>
             <br />
@@ -312,7 +417,7 @@ export const StartScreen: React.FC = () => {
           {/* Feature Pills */}
           <motion.div 
             variants={itemVariants}
-            className="flex flex-wrap justify-center lg:justify-start gap-2 mb-8 max-w-md"
+            className="flex flex-wrap justify-center lg:justify-start gap-2 mb-8 max-w-full sm:max-w-md px-4 sm:px-0"
           >
             <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#4285F4]/5 border border-[#4285F4]/30 text-google-blue text-[11.5px] font-bold">
               <Zap className="w-3.5 h-3.5 fill-current" />
@@ -331,14 +436,14 @@ export const StartScreen: React.FC = () => {
           {/* Action CTAs */}
           <motion.div 
             variants={itemVariants}
-            className="flex flex-col sm:flex-row gap-3.5 w-full sm:w-auto"
+            className="flex flex-col sm:flex-row gap-3.5 w-full sm:w-auto px-4 sm:px-0"
           >
             <Button
               onClick={() => setIsRegisterOpen(true)}
               variant="filled"
               size="md"
               icon={<ChevronRight className="w-3.5 h-3.5" />}
-              className="px-6 bg-google-blue text-white shadow-md font-bold tracking-wide"
+              className="w-full sm:w-auto px-6 bg-google-blue text-white shadow-md font-bold tracking-wide"
             >
               Start Challenge
             </Button>
@@ -348,7 +453,7 @@ export const StartScreen: React.FC = () => {
               variant="outlined"
               size="md"
               icon={<Play className="w-3.5 h-3.5 fill-current" />}
-              className="px-5 font-bold tracking-wide border-white/20 hover:bg-white/5"
+              className="w-full sm:w-auto px-5 font-bold tracking-wide border-white/20 hover:bg-white/5"
             >
               How to Play
             </Button>
@@ -358,7 +463,7 @@ export const StartScreen: React.FC = () => {
         {/* Right Column: Animated Google Wordmark and marquee */}
         <motion.div 
           variants={itemVariants}
-          className="w-full lg:w-[48%] flex flex-col items-center justify-center relative min-h-[300px]"
+          className="w-full lg:w-[48%] flex flex-col items-center justify-center relative min-h-[220px] lg:min-h-[300px] mt-8 lg:mt-0"
         >
           {/* Radial Google Glow behind wordmark */}
           <div className="absolute w-[320px] h-[320px] rounded-full bg-gradient-to-tr from-google-blue/10 to-google-green/10 blur-3xl pointer-events-none -z-10 animate-pulse"></div>
@@ -366,7 +471,7 @@ export const StartScreen: React.FC = () => {
           {/* Wordmark container */}
           <div 
             className="flex select-none font-bold tracking-tight font-sans" 
-            style={{ fontSize: 'clamp(100px, 11vw, 154px)' }}
+            style={{ fontSize: 'clamp(64px, 18vw, 120px)' }}
           >
             {[
               { char: 'G', color: '#4285F4', delay: 0 },
@@ -402,7 +507,7 @@ export const StartScreen: React.FC = () => {
           </div>
 
           {/* Thin looping marquee/ticker strip */}
-          <div className="w-full max-w-md overflow-hidden relative mt-10 pt-6 border-t border-white/5 flex flex-col items-center">
+          <div className="w-full max-w-md overflow-hidden relative mt-6 lg:mt-10 pt-4 lg:pt-6 border-t border-white/5 flex flex-col items-center">
             <div className="w-full overflow-hidden relative h-14 flex items-center">
               <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#07090e] to-transparent z-10 pointer-events-none"></div>
               <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#07090e] to-transparent z-10 pointer-events-none"></div>
@@ -427,7 +532,7 @@ export const StartScreen: React.FC = () => {
                   { Icon: SiFacebook, color: '#1877F2', name: 'Facebook' },
                   { Icon: SiX, color: '#FFFFFF', name: 'X' },
                   { Icon: FaAmazon, color: '#FF9900', name: 'Amazon' },
-                ].concat([
+                 ].concat([
                   { Icon: SiGoogle, color: '#4285F4', name: 'Google' },
                   { Icon: SiGmail, color: '#EA4335', name: 'Gmail' },
                   { Icon: SiYoutube, color: '#FF0000', name: 'YouTube' },
@@ -442,7 +547,7 @@ export const StartScreen: React.FC = () => {
                   const IconComponent = item.Icon;
                   return (
                     <div key={idx} className="inline-flex items-center justify-center p-1" title={item.name}>
-                      <IconComponent style={{ color: item.color }} className="w-11 h-11 hover:scale-110 transition-transform cursor-pointer" />
+                      <IconComponent style={{ color: item.color }} className="w-8 h-8 sm:w-11 sm:h-11 hover:scale-110 transition-transform cursor-pointer" />
                     </div>
                   );
                 })}
@@ -516,15 +621,15 @@ export const StartScreen: React.FC = () => {
         </div>
 
         {/* Podium deck cards */}
-        <div className="flex flex-col md:flex-row items-end justify-center gap-6 mt-1 h-[255px] w-full">
+        <div className="flex flex-col md:flex-row items-stretch md:items-end justify-center gap-6 mt-1 h-auto md:h-[255px] w-full px-4 sm:px-0">
           
           {/* 2nd Place Card */}
           {topThree.length >= 2 && (
-            <div className="flex-[0.9] h-[85%] flex flex-col justify-end w-full">
+            <div className="order-2 md:order-1 flex-[0.9] h-auto md:h-[85%] flex flex-col justify-end w-full max-w-[320px] md:max-w-none mx-auto md:mx-0">
               <motion.div
                 whileHover={{ y: -4, scale: 1.02 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-                className="w-full h-full border border-zinc-700/40 bg-[#161a23]/60 rounded-3xl p-5 flex flex-col justify-between items-center text-center shadow-xl relative border-t-2 border-t-zinc-400/45"
+                className="w-full h-full border border-zinc-700/40 bg-[#161a23]/60 rounded-3xl p-5 flex flex-col justify-between items-center text-center shadow-xl relative border-t-2 border-t-zinc-400/45 min-h-[160px]"
               >
                 {/* Rank badge */}
                 <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[9px] font-black tracking-wider uppercase bg-[#2e3136] text-zinc-200 border border-zinc-600/30 shadow-md">
@@ -558,11 +663,11 @@ export const StartScreen: React.FC = () => {
           )}
 
           {/* 1st Place Card (Champion) */}
-          <div className="flex-[1.1] h-full flex flex-col justify-end w-full">
+          <div className="order-1 md:order-2 flex-[1.1] h-auto md:h-full flex flex-col justify-end w-full max-w-[340px] md:max-w-none mx-auto md:mx-0">
             <motion.div
               whileHover={{ y: -6, scale: 1.02 }}
               transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-              className="w-full h-full border-2 border-[#FBBC05] bg-[#1d1b16]/70 rounded-3xl p-6 flex flex-col justify-between items-center text-center shadow-[0_0_30px_rgba(251,188,5,0.2)] relative z-20"
+              className="w-full h-full border-2 border-[#FBBC05] bg-[#1d1b16]/70 rounded-3xl p-6 flex flex-col justify-between items-center text-center shadow-[0_0_30px_rgba(251,188,5,0.2)] relative z-20 min-h-[180px]"
             >
               {/* Crown Icon */}
               <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-google-yellow drop-shadow-md">
@@ -624,11 +729,11 @@ export const StartScreen: React.FC = () => {
 
           {/* 3rd Place Card */}
           {topThree.length >= 3 && (
-            <div className="flex-[0.9] h-[85%] flex flex-col justify-end w-full">
+            <div className="order-3 md:order-3 flex-[0.9] h-auto md:h-[85%] flex flex-col justify-end w-full max-w-[320px] md:max-w-none mx-auto md:mx-0">
               <motion.div
                 whileHover={{ y: -4, scale: 1.02 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-                className="w-full h-full border border-zinc-700/40 bg-[#191512]/60 rounded-3xl p-4 flex flex-col justify-between items-center text-center shadow-xl relative border-t-2 border-t-[#CD7F32]/50"
+                className="w-full h-full border border-zinc-700/40 bg-[#191512]/60 rounded-3xl p-4 flex flex-col justify-between items-center text-center shadow-xl relative border-t-2 border-t-[#CD7F32]/50 min-h-[160px]"
               >
                 {/* Rank badge */}
                 <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-full text-[9px] font-black tracking-wider uppercase bg-[#CD7F32] text-zinc-100 border border-[#DFA15E]/30 shadow-md">
@@ -665,7 +770,7 @@ export const StartScreen: React.FC = () => {
       </section>
 
       {/* 4. BOTTOM FEATURE BANNER */}
-      <footer className="w-full border-t border-white/5 py-8 flex items-center justify-around text-[10px] text-zinc-400 font-semibold select-none flex-shrink-0 mt-8">
+      <footer className="w-full border-t border-white/5 py-8 grid grid-cols-2 md:flex items-center justify-items-center md:justify-around gap-y-4 gap-x-2 text-[10px] text-zinc-400 font-semibold select-none flex-shrink-0 mt-8 px-4 sm:px-0">
         <div className="flex items-center gap-1.5">
           <Globe className="w-3.5 h-3.5 text-google-blue" />
           <span>Multiple Puzzles (10+ layouts)</span>
@@ -703,7 +808,7 @@ export const StartScreen: React.FC = () => {
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.9, y: 15, opacity: 0 }}
               transition={{ type: 'spring', damping: 20, stiffness: 250 }}
-              className="relative w-full max-w-sm bg-md-surface border border-md-outline/25 shadow-2xl rounded-3xl overflow-hidden z-10"
+              className="relative w-full max-w-sm mx-4 bg-md-surface border border-md-outline/25 shadow-2xl rounded-3xl overflow-hidden z-10 max-h-[90vh] overflow-y-auto"
             >
               <div className="px-6 pt-5 pb-3 flex justify-between items-center border-b border-md-outline/10">
                 <span className="font-extrabold text-sm text-md-on-surface flex items-center gap-1.5">
@@ -803,7 +908,7 @@ export const StartScreen: React.FC = () => {
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.9, y: 20, opacity: 0 }}
               transition={{ type: 'spring', damping: 22, stiffness: 220 }}
-              className="relative w-full max-w-2xl bg-md-surface border border-md-outline/25 shadow-2xl rounded-3xl overflow-hidden z-10 flex flex-col max-h-[90vh]"
+              className="relative w-full max-w-2xl mx-4 bg-md-surface border border-md-outline/25 shadow-2xl rounded-3xl overflow-hidden z-10 flex flex-col max-h-[90vh]"
             >
               <div className="px-6 py-5 flex justify-between items-center border-b border-md-outline/10 flex-shrink-0">
                 <div className="flex items-center gap-2">
@@ -826,11 +931,11 @@ export const StartScreen: React.FC = () => {
                 ) : (
                   <>
                     <div className="grid grid-cols-12 px-4 py-1 text-[9px] font-black text-md-outline uppercase tracking-wider border-b border-md-outline/5 pb-2">
-                      <span className="col-span-1 text-center">#</span>
-                      <span className="col-span-5 text-left">Participant</span>
-                      <span className="col-span-2 text-center">Completed</span>
-                      <span className="col-span-2 text-center">Acc / Time</span>
-                      <span className="col-span-2 text-right">Score</span>
+                      <span className="col-span-2 md:col-span-1 text-center">#</span>
+                      <span className="col-span-7 md:col-span-5 text-left">Participant</span>
+                      <span className="col-span-2 text-center hidden md:block">Completed</span>
+                      <span className="col-span-2 text-center hidden md:block">Acc / Time</span>
+                      <span className="col-span-3 md:col-span-2 text-right">Score</span>
                     </div>
 
                     <div className="flex flex-col gap-2.5 mt-2">
@@ -846,21 +951,21 @@ export const StartScreen: React.FC = () => {
                             key={index}
                             className="grid grid-cols-12 items-center px-4 py-2.5 rounded-2xl border border-md-outline/10 bg-md-surface-variant/5 text-xs transition-all hover:scale-[1.002]"
                           >
-                            <span className={`col-span-1 w-5.5 h-5.5 rounded-full flex items-center justify-center text-[10px] mx-auto border ${rankStyles[index] || 'text-md-outline border-md-outline/25'}`}>
+                            <span className={`col-span-2 md:col-span-1 w-5.5 h-5.5 rounded-full flex items-center justify-center text-[10px] mx-auto border ${rankStyles[index] || 'text-md-outline border-md-outline/25'}`}>
                               {index + 1}
                             </span>
-                            <div className="col-span-5 flex flex-col text-left truncate min-w-0 pr-2">
+                            <div className="col-span-7 md:col-span-5 flex flex-col text-left truncate min-w-0 pr-2">
                               <span className="font-bold text-md-on-surface truncate">{entry.name}</span>
-                              <span className="text-[10px] text-md-outline truncate">{entry.college}</span>
+                              <span className="text-[10px] text-md-outline truncate hidden sm:block">{entry.college}</span>
                             </div>
-                            <span className="col-span-2 text-center font-mono font-bold text-md-on-surface">
+                            <span className="col-span-2 text-center font-mono font-bold text-md-on-surface hidden md:block">
                               {entry.puzzlesCompletedCount} Apps
                             </span>
-                            <div className="col-span-2 flex flex-col items-center font-mono text-[9px] text-md-outline">
+                            <div className="col-span-2 flex flex-col items-center font-mono text-[9px] text-md-outline hidden md:flex">
                               <span>{entry.accuracyPercentage}% Acc</span>
                               <span>{entry.averageTime}s avg</span>
                             </div>
-                            <span className="col-span-2 text-right font-mono font-black text-google-green text-sm">
+                            <span className="col-span-3 md:col-span-2 text-right font-mono font-black text-google-green text-sm">
                               {entry.totalScore}
                             </span>
                           </div>
@@ -896,7 +1001,7 @@ export const StartScreen: React.FC = () => {
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.9, y: 15, opacity: 0 }}
               transition={{ type: 'spring', damping: 20, stiffness: 250 }}
-              className="relative w-full max-w-md bg-md-surface border border-md-outline/25 shadow-2xl rounded-3xl overflow-hidden z-10 flex flex-col"
+              className="relative w-full max-w-md mx-4 bg-md-surface border border-md-outline/25 shadow-2xl rounded-3xl overflow-hidden z-10 flex flex-col max-h-[90vh] overflow-y-auto"
             >
               <div className="px-6 py-5 flex justify-between items-center border-b border-md-outline/10">
                 <span className="font-extrabold text-sm text-md-on-surface flex items-center gap-1.5">
@@ -969,7 +1074,7 @@ export const StartScreen: React.FC = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-sm bg-[#161a23] border border-white/10 rounded-3xl p-6 text-center shadow-2xl relative"
+              className="w-full max-w-sm mx-4 bg-[#161a23] border border-white/10 rounded-3xl p-6 text-center shadow-2xl relative max-h-[90vh] overflow-y-auto"
             >
               {/* Close Button */}
               <button 

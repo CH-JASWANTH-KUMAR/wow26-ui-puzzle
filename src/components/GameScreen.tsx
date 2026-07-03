@@ -179,50 +179,50 @@ export const GameScreen: React.FC = () => {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex-grow flex flex-col max-w-5xl mx-auto w-full px-6 py-6 select-none relative z-10">
+      <div className="flex-grow flex flex-col max-w-5xl mx-auto w-full px-3 sm:px-6 py-4 md:py-6 select-none relative z-10">
         
         {/* Dynamic HUD Stats Bar */}
-        <div className="w-full bg-md-surface/60 border border-md-surface-variant/30 rounded-3xl p-4 flex flex-wrap items-center justify-between gap-4 mb-6 shadow-md backdrop-blur-md">
-          <div className="flex items-center flex-wrap gap-5">
-            <div className="flex items-center gap-1.5" title="Puzzle Timer">
-              <Clock className="w-4 h-4 text-google-blue" />
-              <span className="font-mono text-base font-extrabold text-md-on-surface">
+        <div className="w-full bg-md-surface/60 border border-md-surface-variant/30 rounded-3xl p-2.5 md:p-4 flex items-center justify-between gap-2 md:gap-4 mb-4 md:mb-6 shadow-md backdrop-blur-md">
+          <div className="flex items-center gap-2 md:gap-5 text-xs md:text-sm overflow-hidden select-none">
+            <div className="flex items-center gap-1" title="Puzzle Timer">
+              <Clock className="w-3.5 h-3.5 text-google-blue" />
+              <span className="font-mono text-sm md:text-base font-extrabold text-md-on-surface">
                 {puzzleElapsedTime}s
               </span>
             </div>
             
-            <div className="flex items-center gap-1.5" title="Mistakes on active puzzle">
-              <AlertCircle className="w-4 h-4 text-google-red" />
-              <span className="text-sm font-semibold text-md-on-surface">
-                Mistakes: <span className="font-mono font-extrabold text-google-red">{puzzleMistakes}</span>
+            <div className="flex items-center gap-1" title="Mistakes on active puzzle">
+              <AlertCircle className="w-3.5 h-3.5 text-google-red" />
+              <span className="text-[10px] md:text-sm font-semibold text-md-on-surface">
+                <span className="hidden sm:inline">Mistakes: </span><span className="font-mono font-extrabold text-google-red">{puzzleMistakes}</span>
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5" title="Active combo streak">
-              <Flame className="w-4 h-4 text-google-yellow" />
-              <span className="text-sm font-semibold text-md-on-surface">
-                Combo: <span className="font-mono font-extrabold text-google-yellow">{currentCombo}</span>
+            <div className="flex items-center gap-1" title="Active combo streak">
+              <Flame className="w-3.5 h-3.5 text-google-yellow" />
+              <span className="text-[10px] md:text-sm font-semibold text-md-on-surface">
+                <span className="hidden sm:inline">Combo: </span><span className="font-mono font-extrabold text-google-yellow">{currentCombo}</span>
               </span>
             </div>
 
             <div className="h-4 w-[1px] bg-md-outline/25 hidden md:block"></div>
 
-            <div className="flex items-center gap-1.5" title="Total Session Cumulative Score">
-              <Award className="w-4 h-4 text-google-green" />
-              <span className="text-sm font-semibold text-md-on-surface">
-                Session Score: <span className="font-mono font-black text-google-green">{sessionScore}</span>
+            <div className="flex items-center gap-1" title="Total Session Cumulative Score">
+              <Award className="w-3.5 h-3.5 text-google-green" />
+              <span className="text-[10px] md:text-sm font-semibold text-md-on-surface">
+                <span className="hidden sm:inline">Score: </span><span className="font-mono font-black text-google-green">{sessionScore}</span>
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
             {/* Mute Button */}
             <button
               onClick={toggleMute}
-              className="p-2.5 rounded-full bg-md-surface-variant/20 border border-md-outline/20 text-md-primary hover:bg-md-surface-variant/40 transition-colors cursor-pointer"
+              className="p-2 md:p-2.5 rounded-full bg-md-surface-variant/20 border border-md-outline/20 text-md-primary hover:bg-md-surface-variant/40 transition-colors cursor-pointer"
               title={isMuted ? 'Unmute game sounds' : 'Mute game sounds'}
             >
-              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              {isMuted ? <VolumeX className="w-3.5 h-3.5 md:w-4 h-4" /> : <Volume2 className="w-3.5 h-3.5 md:w-4 h-4" />}
             </button>
 
             {/* Hint Button */}
@@ -231,41 +231,42 @@ export const GameScreen: React.FC = () => {
               disabled={hintUsed || placedPieces.length === activePuzzle.pieces.length}
               variant="tonal"
               size="sm"
-              icon={<HelpCircle className="w-4 h-4" />}
+              icon={<HelpCircle className="w-3.5 h-3.5 md:w-4 h-4" />}
+              className="py-1.5 px-3 md:py-2 md:px-4"
             >
-              Hint {hintUsed && '(Used)'}
+              <span className="hidden md:inline">Hint {hintUsed && '(Used)'}</span>
             </Button>
 
             {/* Reset Button */}
             <button
               onClick={resetSession}
-              className="p-2.5 rounded-full bg-google-red/10 border border-google-red/20 text-google-red hover:bg-google-red/20 transition-colors cursor-pointer"
+              className="p-2 md:p-2.5 rounded-full bg-google-red/10 border border-google-red/20 text-google-red hover:bg-google-red/20 transition-colors cursor-pointer"
               title="Reset Entire Session"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-3.5 h-3.5 md:w-4 h-4" />
             </button>
 
             {/* Finish Session FAB */}
             {puzzlesCompleted.length > 0 && (
-              <Button
-                onClick={finishSession}
-                variant="filled"
-                size="sm"
-                icon={<LogOut className="w-4 h-4" />}
-                className="shadow-md bg-google-blue text-white"
-              >
-                Finish & Save
-              </Button>
+               <Button
+                 onClick={finishSession}
+                 variant="filled"
+                 size="sm"
+                 icon={<LogOut className="w-3.5 h-3.5 md:w-4 h-4" />}
+                 className="shadow-md bg-google-blue text-white py-1.5 px-3 md:py-2 md:px-4 font-bold"
+               >
+                 <span className="hidden sm:inline">Finish & Save</span>
+               </Button>
             )}
           </div>
         </div>
 
         {/* Split Columns Workspace */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-stretch">
           
           {/* Left Column: widget Components Tray */}
-          <MaterialCard variant="filled" className="md:col-span-5 flex flex-col justify-start relative min-h-[300px] md:min-h-0">
-            <div className="flex justify-between items-start mb-1.5 w-full">
+          <MaterialCard variant="filled" className="order-2 md:order-1 md:col-span-5 flex flex-col justify-start relative min-h-0 w-full p-3 md:p-6">
+            <div className="flex justify-between items-start mb-1 md:mb-1.5 w-full">
               <div className="text-left">
                 <h3 className="font-bold text-md-on-surface text-sm">{activePuzzle.name}</h3>
                 <p className="text-[11px] text-md-outline">Drag elements to reconstruct the browser layout</p>
@@ -275,29 +276,29 @@ export const GameScreen: React.FC = () => {
               </span>
             </div>
 
-            <div className="h-[1px] bg-md-outline/10 w-full my-3"></div>
+            <div className="h-[1px] bg-md-outline/10 w-full my-2 md:my-3"></div>
             
-            <div className="flex-1 flex flex-col justify-center items-center">
+            <div className="flex-1 flex flex-col justify-center items-center w-full overflow-hidden">
               {remainingPieces.length === 0 ? (
                 <div className="text-center text-xs text-google-green font-bold py-6 animate-pulse flex flex-col items-center gap-2">
                   <Award className="w-8 h-8" />
                   <span>Success! Completing puzzle...</span>
                 </div>
               ) : (
-                <div className="w-full flex flex-wrap justify-center items-center gap-4">
+                <div className="w-full flex flex-nowrap md:flex-wrap overflow-x-auto md:overflow-x-visible items-center justify-start md:justify-center gap-4 px-2 py-4 scrollbar-thin select-none">
                   <AnimatePresence>
                     {remainingPieces.map((piece) => {
                       const pieceConfig = activePuzzle.pieces.find(p => p.id === piece.id);
                       if (!pieceConfig) return null;
 
                       // Sizing presets based on shape configurations
-                      let widthClass = 'w-44 h-11';
-                      if (pieceConfig.shape === 'circle') widthClass = 'w-11 h-11';
-                      else if (pieceConfig.shape === 'pill') widthClass = 'w-56 h-11';
-                      else if (pieceConfig.shape === 'square') widthClass = 'w-24 h-24';
-                      else if (pieceConfig.shape === 'video') widthClass = 'w-40 h-24';
-                      else if (pieceConfig.shape === 'post') widthClass = 'w-56 h-28';
-                      else if (pieceConfig.shape === 'nav') widthClass = 'w-full max-w-[240px] h-12';
+                      let widthClass = 'w-20 md:w-44 h-10 md:h-11';
+                      if (pieceConfig.shape === 'circle') widthClass = 'w-10 md:w-11 h-10 md:h-11';
+                      else if (pieceConfig.shape === 'pill') widthClass = 'w-24 md:w-56 h-10 md:h-11';
+                      else if (pieceConfig.shape === 'square') widthClass = 'w-20 md:w-24 h-20 md:h-24';
+                      else if (pieceConfig.shape === 'video') widthClass = 'w-24 md:w-40 h-16 md:h-24';
+                      else if (pieceConfig.shape === 'post') widthClass = 'w-24 md:w-56 h-16 md:h-28';
+                      else if (pieceConfig.shape === 'nav') widthClass = 'w-24 md:w-full md:max-w-[240px] h-10 md:h-12';
 
                       return (
                         <motion.div
@@ -307,7 +308,7 @@ export const GameScreen: React.FC = () => {
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.5 }}
                           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                          className={widthClass}
+                          className={`${widthClass} flex-shrink-0`}
                         >
                           <DraggablePiece id={piece.id}>
                             <AppPieceRenderer
@@ -342,8 +343,9 @@ export const GameScreen: React.FC = () => {
           </MaterialCard>
 
           {/* Right Column: Phone Mockup Frame */}
-          <div className="md:col-span-7 flex justify-center items-center">
-            <PhoneMockup appName={activePuzzle.name}>
+          <div className="order-1 md:order-2 md:col-span-7 flex justify-center items-center w-full mb-6 md:mb-0">
+            <div className="w-full max-w-[85vw] sm:max-w-[340px] md:max-w-none md:w-[340px] aspect-[9/19] md:h-[660px]">
+              <PhoneMockup appName={activePuzzle.name}>
               
               {/* Browser viewport absolute coordinates layout */}
               <div className="flex-1 w-full h-full relative p-4 flex flex-col">
@@ -417,6 +419,7 @@ export const GameScreen: React.FC = () => {
 
             </PhoneMockup>
           </div>
+        </div>
 
         </div>
 

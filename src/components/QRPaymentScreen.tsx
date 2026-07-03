@@ -85,25 +85,26 @@ export const QRPaymentScreen: React.FC<QRPaymentScreenProps> = ({
       <motion.div
         initial={{ scale: 0.9, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
-        className="w-full max-w-md bg-[#161a23] border border-zinc-700/50 shadow-2xl rounded-3xl p-8 flex flex-col items-center text-center relative overflow-hidden"
+        className="w-full max-w-sm sm:max-w-md bg-[#161a23] border border-zinc-700/50 shadow-2xl rounded-3xl p-6 sm:p-8 flex flex-col items-center text-center relative overflow-hidden max-h-[90vh] overflow-y-auto"
       >
         {/* Glow effect */}
         <div className="absolute top-[-20%] left-[-20%] w-[50%] h-[50%] rounded-full bg-google-blue/10 blur-3xl pointer-events-none"></div>
 
         {!isExpired ? (
           <>
-            <h3 className="text-xl font-extrabold text-white mb-2 tracking-tight">
+            <h3 className="text-lg sm:text-xl font-extrabold text-white mb-2 tracking-tight">
               Scan with WOW App to Begin
             </h3>
-            <p className="text-xs text-zinc-400 mb-6 max-w-[300px] leading-relaxed">
+            <p className="text-[11px] sm:text-xs text-zinc-400 mb-4 sm:mb-6 max-w-[300px] leading-relaxed">
               Open your WOW 2026 app &rarr; scan this code &rarr; confirm to start
             </p>
 
             {/* QR Code Container with Quiet Zone */}
-            <div className="bg-white p-5 rounded-2xl shadow-xl mb-6 relative group transition-transform duration-300 hover:scale-[1.02]">
+            <div className="bg-white p-4 sm:p-5 rounded-2xl shadow-xl mb-4 sm:mb-6 relative group transition-transform duration-300 hover:scale-[1.02]">
               <QRCodeSVG
                 value={`wow2026:experience:${sessionId}`}
-                size={220}
+                size={180}
+                className="w-[180px] h-[180px] sm:w-[220px] sm:h-[220px]"
                 level="M"
                 includeMargin={false}
               />

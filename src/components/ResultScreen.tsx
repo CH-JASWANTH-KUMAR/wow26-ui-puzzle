@@ -108,7 +108,7 @@ export const ResultScreen: React.FC = () => {
       </div>
 
       {/* Cumulative Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full mb-8">
         <MaterialCard variant="elevated" className="flex flex-col items-center justify-center p-4">
           <Smartphone className="w-5 h-5 text-google-blue mb-1" />
           <span className="text-[10px] font-bold text-md-outline uppercase tracking-wider">Completed</span>
@@ -151,12 +151,12 @@ export const ResultScreen: React.FC = () => {
         ) : (
           <div className="flex-grow overflow-y-auto max-h-[300px] pr-2 flex flex-col gap-2 scrollbar-thin">
             {/* Table Header */}
-            <div className="grid grid-cols-12 px-4 py-1 text-[10px] font-black text-md-outline uppercase tracking-wider border-b border-md-outline/5 pb-2">
-              <span className="col-span-1 text-center">#</span>
-              <span className="col-span-5 text-left">Participant</span>
-              <span className="col-span-2 text-center">Completed</span>
-              <span className="col-span-2 text-center">Accuracy / Time</span>
-              <span className="col-span-2 text-right">Score</span>
+            <div className="grid grid-cols-12 px-4 py-1 text-[9px] font-black text-md-outline uppercase tracking-wider border-b border-md-outline/5 pb-2">
+              <span className="col-span-2 md:col-span-1 text-center">#</span>
+              <span className="col-span-7 md:col-span-5 text-left">Participant</span>
+              <span className="col-span-2 text-center hidden md:block">Completed</span>
+              <span className="col-span-2 text-center hidden md:block">Accuracy / Time</span>
+              <span className="col-span-3 md:col-span-2 text-right">Score</span>
             </div>
 
             {leaderboard.map((entry, index) => {
@@ -181,33 +181,33 @@ export const ResultScreen: React.FC = () => {
                   }`}
                 >
                   {/* Rank */}
-                  <span className={`col-span-1 w-5.5 h-5.5 rounded-full flex items-center justify-center text-[10px] mx-auto border ${rankStyles[index] || 'text-md-outline border-md-outline/25'}`}>
+                  <span className={`col-span-2 md:col-span-1 w-5.5 h-5.5 rounded-full flex items-center justify-center text-[10px] mx-auto border ${rankStyles[index] || 'text-md-outline border-md-outline/25'}`}>
                     {index + 1}
                   </span>
                   
                   {/* Participant Name & College */}
-                  <div className="col-span-5 flex flex-col text-left truncate min-w-0 pr-2">
+                  <div className="col-span-7 md:col-span-5 flex flex-col text-left truncate min-w-0 pr-2">
                     <span className="font-bold text-md-on-surface truncate">
                       {entry.name}
                     </span>
-                    <span className="text-[10px] text-md-outline truncate">
+                    <span className="text-[10px] text-md-outline truncate hidden sm:block">
                       {entry.college}
                     </span>
                   </div>
 
                   {/* Puzzles Completed */}
-                  <span className="col-span-2 text-center font-mono font-bold text-md-on-surface">
+                  <span className="col-span-2 text-center font-mono font-bold text-md-on-surface hidden md:block">
                     {entry.puzzlesCompletedCount} Apps
                   </span>
 
                   {/* Accuracy and Average Time */}
-                  <div className="col-span-2 flex flex-col items-center font-mono text-[10px] text-md-outline">
+                  <div className="col-span-2 flex flex-col items-center font-mono text-[10px] text-md-outline hidden md:flex">
                     <span>{entry.accuracyPercentage}% Acc</span>
                     <span>{entry.averageTime}s avg</span>
                   </div>
 
                   {/* Total Score */}
-                  <span className="col-span-2 text-right font-mono font-black text-google-green text-sm">
+                  <span className="col-span-3 md:col-span-2 text-right font-mono font-black text-google-green text-sm">
                     {entry.totalScore}
                   </span>
                 </div>
@@ -218,13 +218,13 @@ export const ResultScreen: React.FC = () => {
       </MaterialCard>
 
       {/* Play Again Action Button */}
-      <div className="w-full flex justify-center z-10">
+      <div className="w-full flex justify-center z-10 px-6 sm:px-0">
         <Button
           onClick={resetSession}
           variant="filled"
           size="lg"
           icon={<RotateCcw className="w-5 h-5" />}
-          className="shadow-lg shadow-black/10 bg-google-blue text-white"
+          className="w-full sm:w-auto shadow-lg shadow-black/10 bg-google-blue text-white"
         >
           Play Again
         </Button>
